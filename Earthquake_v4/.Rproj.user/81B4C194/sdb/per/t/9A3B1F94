@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1491136673626.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9A3B1F94",
+    "lastKnownWriteTime" : 32370120545140837,
+    "last_content_update" : 1491136673626,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "C2A8CAE9",
+        "caption" : "TRy50",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=TRy50&cache_key=C2A8CAE9",
+        "displayedObservations" : 42078,
+        "environment" : "",
+        "object" : "TRy50",
+        "preview" : 0,
+        "totalObservations" : 42078,
+        "variables" : 3
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

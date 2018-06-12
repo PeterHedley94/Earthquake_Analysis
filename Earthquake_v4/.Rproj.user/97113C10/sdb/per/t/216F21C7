@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\nplotPop <- function(Pop.sp2, Map,Pop.sp3.points){\n  Pop.sp2 <- Population_Data\n  Pop.sp3 <- as(Pop.sp2, \"SpatialPolygonsDataFrame\")\n  Pop.sp3@polygons[[1]]@Polygons[[1]]@coords\n  Pop.sp3@data$id = seq(1,length(Pop.sp3@polygons),by = 1)\n  #Pop.sp3.points = fortify(Pop.sp3, region=\"id\")\n  #save(Pop.sp3.points,file='FORTIFIED_v2.R')\n  load('FORTIFIED_v2.R')\n  Pop.df = join(Pop.sp3.points, Pop.sp3@data, by=\"id\")\n  colnames(Pop.df) <- c('lon','lat','order','hole','piece','id','group','population')\n  graph <- Map + geom_polygon(aes(group=Pop.df$id),data=Pop.df) + scale_color_gradient(low = 'green', high = 'red')+scale_fill_gradient(low = \"green\", high = \"red\")\n  pdf('Population_Data.pdf')\n  print(graph)\n  dev.off()\n}\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1493202642677.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3285007440",
+    "id" : "216F21C7",
+    "lastKnownWriteTime" : 1493193708,
+    "last_content_update" : 1493193708,
+    "path" : "C:/Users/Peter/Desktop/Peter_Hedley_Dissertation/Earthquake_v4/ALL_FUNCTIONS/02_11_Plot_Pop_Data.R",
+    "project_path" : "ALL_FUNCTIONS/02_11_Plot_Pop_Data.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

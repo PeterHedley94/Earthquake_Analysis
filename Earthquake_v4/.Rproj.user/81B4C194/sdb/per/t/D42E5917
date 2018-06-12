@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\n\nCreate_Risk_CSV <- function(Population_Data){\n  \n  population_file <- 'C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/tur_gpwv3_pcount_ascii_25/turp00ag.asc'\n  Pop_Data <- read.csv(population_file, header = FALSE,skip = 6,sep=\" \")\n  Pop_Data <- Pop_Data[,1:528]\n  \n  Mw_Raster_file <- 'C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS/FL_DISS_RASTER/COMBINED_FAULTS.csv'\n  #Mw_Data <- read.asc(Mw_Raster_file)\n  Mw_Data <- read.csv(Mw_Raster_file, header = FALSE,sep=\" \")\n  #head(Mw_Data)\n  \n  Risk <- 10^Mw_Data*Pop_Data\n  Risk <- as.matrix(Risk)\n  Risk <- log10(Risk)\n  \n  \n  Olddir <- getwd()\n  Newdir <- paste(getwd(),'/FL_DISS_RASTER',sep = '')\n  setwd(Newdir)\n  matrix(rep(c(1,1,1), 3), nrow = 3)\n  combfilename  = 'Risk_Data.asc'\n  matrix1 <- raster(Risk,xmn=Population_Data@bbox[1,1], xmx=Population_Data@bbox[1,2], ymn=Population_Data@bbox[2,1], ymx = Population_Data@bbox[2,2])\n  matrix1 <- focal(matrix1,fun = mean, w = matrix(rep(c(1,1,1), 3), nrow = 3))\n  raterbkup <- matrix\n  plot(matrix1)\n  matrix <- asc.from.raster(matrix1)\n  \n  #matrix\n  write.asc(matrix, file = combfilename)\n  \n  setwd(Olddir)\n}\n\n\n\nplot_Risk <- function(Population_Data, Map){\n  setwd('C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS')\n  Olddir <- getwd()\n  Newdir <- paste(getwd(),'/FL_DISS_RASTER',sep = '')\n  Newdir2 <- paste(getwd(),'/PLOTS',sep='')\n  setwd(Newdir)\n  Risk_Raster_file <- 'Risk_Data.asc'\n  Risk_Data <- read.asc(Risk_Raster_file)\n  Risk <- raster.from.asc(Risk_Data)\n  #plot(Risk)\n  \n  summary(Risk@data@values)\n  Risk@data@values[which(Risk@data@values<175)] <- 1\n  Risk@data@values[which(Risk@data@values<200 & Risk@data@values>=175)] <- 2\n  Risk@data@values[which(Risk@data@values<225 & Risk@data@values>=200)] <- 3\n  Risk@data@values[Risk@data@values>=225 & Risk@data@values<250] <- 4\n  Risk@data@values[which(Risk@data@values<275 & Risk@data@values>=250)] <- 5\n  Risk@data@values[Risk@data@values>=275 & Risk@data@values<300] <- 6\n  Risk@data@values[Risk@data@values>=300 & Risk@data@values<325] <- 7\n  Risk@data@values[Risk@data@values>=325] <- 8\n  \n  Risk_Data <-asc.from.raster(Risk)\n  \n  Mw.sp1 <- sp.from.asc(Risk_Data, projs = CRS(as.character(\"+init=epsg:4326\")))\n  plot(Mw.sp1)\n  \n  Mw.sp2 <- Mw.sp1[Mw.sp1@data$z > 0,]\n  \n  Mw.sp3 <- as(Mw.sp2, \"SpatialPolygonsDataFrame\")\n  #plot(Mw.sp3)\n  \n  setwd('C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS/DATA/TUR_adm_shp/')\n  TUR <- readOGR(\".\", \"TUR_adm0\")\n  TUR <- spTransform(TUR, CRSobj = CRS(proj4string(Mw.sp2)))\n\n  #Mw.sp2 <- Mw.sp2[TUR,]\n  TRy50 <- data.frame(Mw.sp2)\n  setwd('C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS')\n  \n  Tur.f = data.frame(TUR)\n  Tur.f <- tidy(TUR)\n  \n  \n  \n  TRy50$z <- round(TRy50$z)\n  summary(TRy50$z)\n\n\n  #TRy50$z[TRy50$z<230] <- 1\n  TRy50$z <- as.character(TRy50$z)\n  \n  \n  \n  cols <- c(\"8\" = \"firebrick4\", \"7\" = 'firebrick3', \"6\" = \"orangered3\",\"5\" = \"orangered\",\"4\" = \"darkorange\", \"3\" = \"yellow2\",\"2\" = \"yellow\",\"1\" = \"lightgoldenrod\")#\n  graph2 <- ggplot(aes(x = s1, y = s2),data = TRy50) + geom_raster(aes(fill = z),size = 0.01) + scale_fill_manual(name = 'Mw', values = cols,breaks = c(4,5,6,7,8))\n  graph2 <- graph2 +  geom_path(aes(group = group, x = long, y = lat),data = Tur.f, color = 'black', size = 1) + theme_void()\n  \n  graph2\n  \n  pdf('Risk_Map.pdf')\n  print(graph2)\n  dev.off()\n  setwd(Olddir)\n  return(Mw.df)\n  \n}",
+    "created" : 1491118312546.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3047328603",
+    "id" : "D42E5917",
+    "lastKnownWriteTime" : 1491138248,
+    "last_content_update" : 1491138248094,
+    "path" : "~/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS/02_14_Risk_Map.R",
+    "project_path" : "ALL_FUNCTIONS/02_14_Risk_Map.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

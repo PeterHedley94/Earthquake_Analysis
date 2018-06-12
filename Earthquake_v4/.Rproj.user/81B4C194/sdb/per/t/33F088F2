@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "require(epiR)\nrequire(plyr)\nrequire(raster)\nrequire(broom)\nrequire(SDMTools)\nrequire(ggplot2)\n\nDissipate_Fault_Lines <- function(Fault_Spec_Log_Norm,FL_Data,Population_Data){\n  #Fault_Spec_Log_Norm <- Fault_Spec_Gamma\n  setwd('C:/Users/Peter/Documents/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS')\n  FL_Data2 <- FL_Data[,1]\n  FL_Data2$IDBG <- Fault_Spec_Log_Norm$X500\n  FL_Data2$id <- seq(from = 0,to = (length(FL_Data2$IDBG)-1),by=1)\n  names(FL_Data2) <- c('Mw','id')\n  \n  \n  \n  Olddir <- getwd()\n  Newdir <- paste(getwd(),'/FL_DISS_RASTER',sep = '')\n  \n  \n  \n  #Convert spatial dataframe to dataframe for ggplot2\n  FL_Data3 <- fortify(FL_Data2)\n  colnames(FL_Data3) <- c(\"lon\",\"lat\",\"order\",\"piece\",\"id\",\"group\")\n  #Add Mw data to the dataframe\n  FL_Data3 <- join(FL_Data3,data.frame(FL_Data2@data),by='id')\n  \n  #CHANGE THIS WHEN FIX MW PROBLEM!!!!!\n  FL_Data3 <- FL_Data3[FL_Data3$Mw>4,]\n  FL_Data3 <- FL_Data3[is.finite(FL_Data3$Mw),]\n  longest_dist <- 0\n  \n  \n  \n  for (i in unique(FL_Data3$id)){\n\n    tempdata <- FL_Data3[FL_Data3$id == i,]\n    if (dim(tempdata)[1] > longest_dist){\n      print(i)\n      longest_dist <- dim(tempdata)[1]\n      }\n    Loncheck <- dim(tempdata[tempdata$lon>Population_Data@bbox[1,1],])[1]\n    Loncheck2 <- dim(tempdata[tempdata$lon<Population_Data@bbox[1,2],])[1]\n    Latcheck <- dim(tempdata[tempdata$lat<Population_Data@bbox[2,2],])[1]\n    Latcheck2 <- dim(tempdata[tempdata$lat>Population_Data@bbox[2,1],])[1]\n    if(Loncheck >0 & Loncheck2 >0 & Latcheck >0 & Latcheck2>0){\n      #print('no change')\n    }else{\n      FL_Data3 <- FL_Data3[!FL_Data3$id == i,]\n    }\n  }\n  for (i in unique(FL_Data3$id)){\n    #print(i)\n  }\n  \n  source('03_02_Data_Dissipate_FL_Matrix_TESTING_v5.R')\n  #for (i in c(438,696,439,250,670)){\n  #for (i in c(696)){\n  for (i in unique(FL_Data3$id)){\n    tempFL_Data <- FL_Data3[FL_Data3$id == i,]\n    coordsx <- tempFL_Data[,'lon']\n    coordsy <- tempFL_Data[,'lat']\n    df <- data.frame(coordsx,coordsy)\n    Map + geom_path(aes(x = coordsx, y =coordsy),data = df)\n    plot(coordsx,coordsy)\n    Mw <- tempFL_Data[1,'Mw']\n    print(paste('FAULT NO. : ', as.character(i),sep = ''))\n    matrix <- dissipate_FL_Mw(Population_Data,coordsx,coordsy,Mw)\n    print(paste('Matrix Max <- ' , as.character(max(matrix)),sep = ''))\n    #plot(raster(matrix))\n    setwd(Newdir)\n    filename = paste('AMAX FAULT_', as.character(i),'.csv')\n    #print('colnames')\n    #print(colnames(matrix))\n    #print('rownames m1')\n    #print(rownames(matrix))\n    #write.asc()\n    #epi.asc(matrix, filename, Population_Data@bbox[1,1], Population_Data@bbox[2,1], Population_Data@grid@cellsize[2], na = 0)\n    write.table(matrix, filename,col.names = FALSE,row.names = FALSE,sep=' ')\n    print(paste('Completed Fault: ',as.character(i)))\n    print(length(rownames(matrix)))\n    print(length(colnames(matrix)))\n    setwd(Olddir)\n    \n  }\n}\n#ggplot(aes(group = group,x = lon, y = lat), data = FL_Data3[,1:6]) + geom_path()\n",
+    "created" : 1491118664909.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3147233246",
+    "id" : "33F088F2",
+    "lastKnownWriteTime" : 1491118725,
+    "last_content_update" : 1491118725097,
+    "path" : "~/Earthquake_v4/Earthquake_v4/ALL_FUNCTIONS/02_12_Setup2Diss.R",
+    "project_path" : "ALL_FUNCTIONS/02_12_Setup2Diss.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
